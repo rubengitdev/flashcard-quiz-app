@@ -18,6 +18,7 @@ var InvalidUserInputError = /** @class */ (function (_super) {
     function InvalidUserInputError(message) {
         var _this = _super.call(this, message) || this;
         _this.name = 'InvalidUserInputError';
+        Object.setPrototypeOf(_this, InvalidUserInputError.prototype);
         return _this;
     }
     return InvalidUserInputError;
@@ -32,6 +33,7 @@ var currentCards = [
         questionAnswer: 'CSS add styling to your HTML',
     },
 ];
+// Initialize DOM element from HTML
 var flashcard = document.getElementById('flashcard');
 var question = document.getElementById('question');
 var answer = document.getElementById('answer');
@@ -39,18 +41,17 @@ var deleteBtn = document.getElementById('delete-btn');
 var entryForm = document.getElementById('entry-form');
 var frontText = document.getElementById('front-text');
 var backText = document.getElementById('back-text');
-var currentIndex = currentCards.length - 1;
 // Display FlashCard
 var displayCard = function () {
-    var card = currentCards[currentIndex];
-    if (!card) {
-        question.textContent = 'No cards';
+    flashcard.classList.remove('flipped');
+    if (currentCards.length === 0) {
+        question.textContent = '';
         answer.textContent = '';
         return;
     }
+    var card = currentCards[currentCards.length - 1];
     question.textContent = card.questionText;
     answer.textContent = card.questionAnswer;
-    flashcard.classList.remove('flipped');
 };
 displayCard();
 // Flip FlashCard
@@ -62,23 +63,20 @@ deleteBtn.addEventListener('click', function () {
     if (currentCards.length === 0) {
         return;
     }
-    currentCards.splice(currentIndex, 1);
-    currentIndex--;
-    if (currentIndex < 0) {
-        currentIndex = currentCards.length - 1;
-    }
+    currentCards.pop();
+    flashcard.classList.remove('flipped');
     displayCard();
 });
 // Add new FlashCard
 entryForm.addEventListener('submit', function (event) {
-    event.preventDefault();
     var questionText = frontText.value.trim();
     var questionAnswer = backText.value.trim();
     if (questionText === '' || questionAnswer === '') {
         throw new InvalidUserInputError('Question and answer cannot be empty');
     }
+    event.preventDefault();
     currentCards.push({ questionText: questionText, questionAnswer: questionAnswer });
-    currentIndex = currentCards.length - 1;
+    flashcard.classList.remove('flipped');
     displayCard();
     frontText.value = '';
     backText.value = '';

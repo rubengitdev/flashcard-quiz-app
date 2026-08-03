@@ -7,6 +7,7 @@ class InvalidUserInputError extends Error {
     constructor(message: string) {
         super(message);
         this.name = 'InvalidUserInputError';
+        Object.setPrototypeOf(this, InvalidUserInputError.prototype);
     }
 }
 
@@ -21,6 +22,7 @@ let currentCards: FlashCard[] = [
     },
 ];
 
+// Initialize DOM element from HTML
 const flashcard = document.getElementById('flashcard') as HTMLDivElement;
 const question = document.getElementById('question') as HTMLDivElement;
 const answer = document.getElementById('answer') as HTMLDivElement;
@@ -29,21 +31,19 @@ const entryForm = document.getElementById('entry-form') as HTMLFormElement;
 const frontText = document.getElementById('front-text') as HTMLTextAreaElement;
 const backText = document.getElementById('back-text') as HTMLTextAreaElement;
 
-let currentIndex = currentCards.length - 1;
-
 // Display FlashCard
 const displayCard = () => {
-    const card = currentCards[currentIndex];
+    flashcard.classList.remove('flipped');
 
-    if (!card) {
-        question.textContent = 'No cards';
+    if (currentCards.length === 0) {
+        question.textContent = '';
         answer.textContent = '';
         return;
     }
 
+    const card = currentCards[currentCards.length - 1];
     question.textContent = card.questionText;
     answer.textContent = card.questionAnswer;
-    flashcard.classList.remove('flipped');
 };
 
 displayCard();
@@ -59,32 +59,26 @@ deleteBtn.addEventListener('click', () => {
         return;
     }
 
-    currentCards.splice(currentIndex, 1);
+    currentCards.pop();
 
-    currentIndex--;
-
-    if (currentIndex < 0) {
-        currentIndex = currentCards.length - 1;
-    }
+    flashcard.classList.remove('flipped');
 
     displayCard();
 });
 
 // Add new FlashCard
 entryForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-
     const questionText = frontText.value.trim();
     const questionAnswer = backText.value.trim();
 
     if (questionText === '' || questionAnswer === '') {
         throw new InvalidUserInputError('Question and answer cannot be empty');
     }
+    event.preventDefault();
 
     currentCards.push({ questionText, questionAnswer });
 
-    currentIndex = currentCards.length - 1;
-
+    flashcard.classList.remove('flipped');
     displayCard();
 
     frontText.value = '';
