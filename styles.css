@@ -51,6 +51,7 @@ main {
 
 button {
     padding: 10px 20px;
+    border-radius: 10px;
 }
 
 textarea {
@@ -59,4 +60,5 @@ textarea {
     margin: 10px 0;
     padding: 10px;
     resize: none;
+    border-radius: 10px;
 }
